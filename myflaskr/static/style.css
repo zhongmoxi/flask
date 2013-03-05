@@ -17,3 +17,7 @@ h2		{ font-size: 1.2em; }
                   border: 1px solid #AACBE2; }
 .error          { background: #F0D6D6; padding: 0.5em; }
 
+.menu		{float:right;margin-top:8px}
+.menu li	{display:inline}
+.menu li+li	{margin-left:35px}
+.menu li a	{color:#999;text-decoration:none};

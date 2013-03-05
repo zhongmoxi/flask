@@ -41,6 +41,10 @@ def show_entries():
     entries = [dict(title=row[0],author=row[1],time=row[2],text=row[3]) for row in cur.fetchall()]
     return render_template('show_entries.html', entries=entries)
 
+@app.route('/about')
+def about():
+    return render_template('about.html')
+
 @app.route('/add', methods=['POST'])
 def add_entry():
     cur_time=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))
@@ -70,6 +74,7 @@ def logout():
     session.pop('logged_in', None)
     flash('You were logged out')
     return redirect(url_for('show_entries'))
+
 if __name__ == '__main__':
     app.run()
  
