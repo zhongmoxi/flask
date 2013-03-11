@@ -7,6 +7,7 @@ from flask import Flask,request,session,g,redirect,url_for,\
      abort,render_template,flash
 from flask.ext.sqlalchemy import SQLAlchemy
 from datetime import datetime
+from werkzeug.security import generate_password_hash,check_password_hash
 
 
 # configuration
@@ -50,10 +51,16 @@ class User(db.Model):
 
     def __init__(self, username, password):
         self.username = username 
-        self.password = password
-        
+        self.set_password(password)
+
+    def set_password(self,password):
+	self.password = generate_password_hash(password)
+    
+    def check_password(self,password):
+	return check_password_hash(self.password,password)
+
     def __repr__(self):
-        return '<Post %r>' % self.username
+        return '<User %r>' % self.username
 
 #def connect_db():
 #    return sqlite3.connect(app.config['DATABASE'])
@@ -89,7 +96,7 @@ def add_entry():
 	abort(401)
     #g.db.execute('insert into entries (title,author,time, text) values (?, ?, ?, ?)',[request.form['title'],app.config['USERNAME'],cur_time,request.form['text']])
     title=request.form['title']
-    author=g.user.username
+    author = session['username']
     text=request.form['text']
     en=Entry(title,author,text)
     db.session.add(en)
@@ -104,11 +111,11 @@ def login():
 	user = User.query.filter_by(username=request.form['username']).first()
         if not user:
 	     flash('Invalid username')
-	elif user.password != request.form['password']:
+	elif not user.check_password(request.form['password']):
 	     flash('Invalid password')	
         else:
              session['logged_in'] = True
-	     g.user = user	
+	     session['username'] = user.username	
              flash('You were logged in')
              return redirect(url_for('show_entries'))
     return render_template('login.html', error=error)
