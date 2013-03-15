@@ -1,6 +1,7 @@
 .DS_Store
 *.pyc
 *.pyo
+*.swp
 env
 env*
 dist
@@ -8,3 +9,6 @@ dist
 *.egg-info
 _mailinglist
 .tox
+
+# Installer logs
+pip-log.txt
