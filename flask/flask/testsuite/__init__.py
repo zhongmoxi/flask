@@ -76,6 +76,7 @@ def catch_warnings():
     warnings.filters = filters[:]
     old_showwarning = warnings.showwarning
     log = []
+
     def showwarning(message, category, filename, lineno, file=None, line=None):
         log.append(locals())
     try:

@@ -25,6 +25,7 @@ class DeprecationsTestCase(FlaskTestCase):
 
         with catch_warnings() as log:
             app = MyFlask(__name__)
+
             @app.route('/')
             def foo():
                 return app.jinja_env.globals['foo']

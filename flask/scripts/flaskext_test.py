@@ -130,7 +130,7 @@ class TestResult(object):
             try:
                 c = subprocess.Popen([intrptr, 'setup.py',
                                       '--' + field], cwd=folder,
-                                      stdout=subprocess.PIPE)
+                                     stdout=subprocess.PIPE)
                 return c.communicate()[0].strip()
             except OSError:
                 return '?'
@@ -172,7 +172,8 @@ def get_test_command(checkout_dir):
 
 
 def fetch_extensions_list():
-    req = urllib2.Request(flask_svc_url, headers={'accept':'application/json'})
+    req = urllib2.Request(
+        flask_svc_url, headers={'accept': 'application/json'})
     d = urllib2.urlopen(req).read()
     data = json.loads(d)
     for ext in data['extensions']:
@@ -213,9 +214,9 @@ def create_tox_ini(checkout_path, interpreters, flask_dep):
     if not os.path.exists(tox_path):
         with open(tox_path, 'w') as f:
             f.write(tox_template % {
-                'env':      ','.join(interpreters),
-                'cache':    tdir,
-                'deps':     flask_dep
+                'env': ','.join(interpreters),
+                'cache': tdir,
+                'deps': flask_dep
             })
     return tox_path
 
@@ -247,7 +248,8 @@ def test_extension(name, interpreters, flask_dep):
     # afterall.
 
     create_tox_ini(checkout_path, interpreters, flask_dep)
-    rv = subprocess.call(['tox', '-c', 'tox-flask-test.ini'], cwd=checkout_path)
+    rv = subprocess.call(
+        ['tox', '-c', 'tox-flask-test.ini'], cwd=checkout_path)
     return TestResult(name, checkout_path, rv, interpreters)
 
 

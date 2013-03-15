@@ -163,5 +163,5 @@ def jsonify(*args, **kwargs):
     .. versionadded:: 0.2
     """
     return current_app.response_class(dumps(dict(*args, **kwargs),
-        indent=None if request.is_xhr else 2),
-        mimetype='application/json')
+                                            indent=None if request.is_xhr else 2),
+                                      mimetype='application/json')

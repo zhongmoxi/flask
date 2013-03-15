@@ -56,6 +56,7 @@ class AppContextTestCase(FlaskTestCase):
     def test_app_tearing_down(self):
         cleanup_stuff = []
         app = flask.Flask(__name__)
+
         @app.teardown_appcontext
         def cleanup(exception):
             cleanup_stuff.append(exception)
@@ -78,19 +79,22 @@ class AppContextTestCase(FlaskTestCase):
     def test_context_refcounts(self):
         called = []
         app = flask.Flask(__name__)
+
         @app.teardown_request
         def teardown_req(error=None):
             called.append('request')
+
         @app.teardown_appcontext
         def teardown_app(error=None):
             called.append('app')
+
         @app.route('/')
         def index():
             with flask._app_ctx_stack.top:
                 with flask._request_ctx_stack.top:
                     pass
             self.assert_(flask._request_ctx_stack.request.environ
-                ['werkzeug.request'] is not None)
+                         ['werkzeug.request'] is not None)
         c = app.test_client()
         c.get('/')
         self.assertEqual(called, ['request', 'app'])

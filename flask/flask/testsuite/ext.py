@@ -26,7 +26,7 @@ class ExtImportHookTestCase(FlaskTestCase):
             if (entry.startswith('flask.ext.') or
                 entry.startswith('flask_') or
                 entry.startswith('flaskext.') or
-                entry == 'flaskext') and value is not None:
+                    entry == 'flaskext') and value is not None:
                 sys.modules.pop(entry, None)
         from flask import ext
         reload(ext)
@@ -92,7 +92,8 @@ class ExtImportHookTestCase(FlaskTestCase):
 
     def test_flaskext_old_package_import_submodule(self):
         from flask.ext.oldext_package import submodule
-        self.assert_equal(submodule.__name__, 'flaskext.oldext_package.submodule')
+        self.assert_equal(
+            submodule.__name__, 'flaskext.oldext_package.submodule')
         self.assert_equal(submodule.test_function(), 42)
 
     def test_flaskext_old_package_import_submodule_function(self):
@@ -114,7 +115,8 @@ class ExtImportHookTestCase(FlaskTestCase):
             self.assert_(tb.tb_frame.f_globals is globals())
 
             next = tb.tb_next
-            self.assert_('flask_broken/__init__.py' in next.tb_frame.f_code.co_filename)
+            self.assert_(
+                'flask_broken/__init__.py' in next.tb_frame.f_code.co_filename)
 
 
 def suite():

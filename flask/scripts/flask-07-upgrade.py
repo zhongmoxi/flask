@@ -40,12 +40,15 @@ _string_re_part = r"('([^'\\]*(?:\\.[^'\\]*)*)'" \
 
 _from_import_re = re.compile(r'^\s*from flask import\s+')
 _url_for_re = re.compile(r'\b(url_for\()(%s)' % _string_re_part)
-_render_template_re = re.compile(r'\b(render_template\()(%s)' % _string_re_part)
-_after_request_re = re.compile(r'((?:@\S+\.(?:app_)?))(after_request)(\b\s*$)(?m)')
+_render_template_re = re.compile(
+    r'\b(render_template\()(%s)' % _string_re_part)
+_after_request_re = re.compile(
+    r'((?:@\S+\.(?:app_)?))(after_request)(\b\s*$)(?m)')
 _module_constructor_re = re.compile(r'([a-zA-Z0-9_][a-zA-Z0-9_]*)\s*=\s*Module'
                                     r'\(__name__\s*(?:,\s*(?:name\s*=\s*)?(%s))?' %
                                     _string_re_part)
-_error_handler_re = re.compile(r'%s\.error_handlers\[\s*(\d+)\s*\]' % _app_re_part)
+_error_handler_re = re.compile(
+    r'%s\.error_handlers\[\s*(\d+)\s*\]' % _app_re_part)
 _mod_route_re = re.compile(r'@([a-zA-Z0-9_][a-zA-Z0-9_]*)\.route')
 _blueprint_related = [
     (re.compile(r'request\.module'), 'request.blueprint'),
@@ -56,9 +59,11 @@ _blueprint_related = [
 
 def make_diff(filename, old, new):
     for line in difflib.unified_diff(old.splitlines(), new.splitlines(),
-                     posixpath.normpath(posixpath.join('a', filename)),
-                     posixpath.normpath(posixpath.join('b', filename)),
-                     lineterm=''):
+                                     posixpath.normpath(
+                                     posixpath.join('a', filename)),
+                                     posixpath.normpath(
+                                     posixpath.join('b', filename)),
+                                     lineterm=''):
         print line
 
 
@@ -208,6 +213,7 @@ def rewrite_blueprint_imports(contents):
 
 def rewrite_for_blueprints(contents, filename):
     modules_declared = []
+
     def handle_match(match):
         target = match.group(1)
         name_param = match.group(2)

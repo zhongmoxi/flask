@@ -71,9 +71,9 @@ class TaggedJSONSerializer(object):
                     return unicode(value)
                 except UnicodeError:
                     raise UnexpectedUnicodeError(u'A byte string with '
-                        u'non-ASCII data was passed to the session system '
-                        u'which can only store unicode strings.  Consider '
-                        u'base64 encoding your string (String was %r)' % value)
+                                                 u'non-ASCII data was passed to the session system '
+                                                 u'which can only store unicode strings.  Consider '
+                                                 u'base64 encoding your string (String was %r)' % value)
             return value
         return json.dumps(_tag(value), separators=(',', ':'))
 
@@ -217,7 +217,7 @@ class SessionInterface(object):
         uses ``/`` if it's `None`.
         """
         return app.config['SESSION_COOKIE_PATH'] or \
-               app.config['APPLICATION_ROOT'] or '/'
+            app.config['APPLICATION_ROOT'] or '/'
 
     def get_cookie_httponly(self, app):
         """Returns True if the session cookie should be httponly.  This

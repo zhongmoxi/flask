@@ -12,7 +12,7 @@
 from __future__ import with_statement
 from sqlite3 import dbapi2 as sqlite3
 from flask import Flask, request, session, g, redirect, url_for, abort, \
-     render_template, flash, _app_ctx_stack
+    render_template, flash, _app_ctx_stack
 
 # configuration
 DATABASE = '/tmp/flaskr.db'
@@ -71,7 +71,7 @@ def add_entry():
         abort(401)
     db = get_db()
     db.execute('insert into entries (title, text) values (?, ?)',
-                 [request.form['title'], request.form['text']])
+               [request.form['title'], request.form['text']])
     db.commit()
     flash('New entry was successfully posted')
     return redirect(url_for('show_entries'))

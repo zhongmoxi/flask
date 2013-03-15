@@ -40,6 +40,7 @@ Links
 """
 from setuptools import Command, setup
 
+
 class run_audit(Command):
     """Audits source code using PyFlakes for following issues:
         - Names which are used but not defined or used before they are defined.
@@ -55,7 +56,8 @@ class run_audit(Command):
         pass
 
     def run(self):
-        import os, sys
+        import os
+        import sys
         try:
             import pyflakes.scripts.pyflakes as flakes
         except ImportError:
@@ -68,7 +70,7 @@ class run_audit(Command):
         for dir in dirs:
             for root, _, files in os.walk(dir):
                 for file in files:
-                    if file != '__init__.py' and file.endswith('.py') :
+                    if file != '__init__.py' and file.endswith('.py'):
                         warns += flakes.checkPath(os.path.join(root, file))
         if warns > 0:
             print "Audit finished with total %d warnings." % warns

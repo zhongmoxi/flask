@@ -24,17 +24,17 @@ from .helpers import url_for, flash, send_file, send_from_directory, \
     get_flashed_messages, get_template_attribute, make_response, safe_join, \
     stream_with_context
 from .globals import current_app, g, request, session, _request_ctx_stack, \
-     _app_ctx_stack
+    _app_ctx_stack
 from .ctx import has_request_context, has_app_context, \
-     after_this_request
+    after_this_request
 from .module import Module
 from .blueprints import Blueprint
 from .templating import render_template, render_template_string
 
 # the signals
 from .signals import signals_available, template_rendered, request_started, \
-     request_finished, got_request_exception, request_tearing_down, \
-     appcontext_tearing_down
+    request_finished, got_request_exception, request_tearing_down, \
+    appcontext_tearing_down
 
 # We're not exposing the actual json module but a convenient wrapper around
 # it.

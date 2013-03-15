@@ -23,6 +23,7 @@ class SignalsTestCase(FlaskTestCase):
             return flask.render_template('simple_template.html', whiskey=42)
 
         recorded = []
+
         def record(sender, template, context):
             recorded.append((template, context))
 
@@ -70,8 +71,8 @@ class SignalsTestCase(FlaskTestCase):
             self.assert_equal(rv.data, 'stuff')
 
             self.assert_equal(calls, ['before-signal', 'before-handler',
-                             'handler', 'after-handler',
-                             'after-signal'])
+                                      'handler', 'after-handler',
+                                      'after-signal'])
         finally:
             flask.request_started.disconnect(before_request_signal, app)
             flask.request_finished.disconnect(after_request_signal, app)
@@ -82,7 +83,7 @@ class SignalsTestCase(FlaskTestCase):
 
         @app.route('/')
         def index():
-            1/0
+            1 / 0
 
         def record(sender, exception):
             recorded.append(exception)

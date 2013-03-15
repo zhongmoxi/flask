@@ -21,7 +21,7 @@ from functools import update_wrapper
 from werkzeug.datastructures import ImmutableDict
 from werkzeug.routing import Map, Rule, RequestRedirect, BuildError
 from werkzeug.exceptions import HTTPException, InternalServerError, \
-     MethodNotAllowed, BadRequest
+    MethodNotAllowed, BadRequest
 
 from .helpers import _PackageBoundObject, url_for, get_flashed_messages, \
     locked_cached_property, _endpoint_from_view_func, find_package
@@ -54,12 +54,12 @@ def setupmethod(f):
     def wrapper_func(self, *args, **kwargs):
         if self.debug and self._got_first_request:
             raise AssertionError('A setup function was called after the '
-                'first request was handled.  This usually indicates a bug '
-                'in the application where a module was not imported '
-                'and decorators or other functionality was called too late.\n'
-                'To fix this make sure to import all your view modules, '
-                'database models and everything related at a central place '
-                'before the application starts serving requests.')
+                                 'first request was handled.  This usually indicates a bug '
+                                 'in the application where a module was not imported '
+                                 'and decorators or other functionality was called too late.\n'
+                                 'To fix this make sure to import all your view modules, '
+                                 'database models and everything related at a central place '
+                                 'before the application starts serving requests.')
         return f(self, *args, **kwargs)
     return update_wrapper(wrapper_func, f)
 
@@ -167,6 +167,7 @@ class Flask(_PackageBoundObject):
     # Backwards compatibility support
     def _get_request_globals_class(self):
         return self.app_ctx_globals_class
+
     def _set_request_globals_class(self, value):
         from warnings import warn
         warn(DeprecationWarning('request_globals_class attribute is now '
@@ -219,7 +220,7 @@ class Flask(_PackageBoundObject):
     #: `PERMANENT_SESSION_LIFETIME` configuration key.  Defaults to
     #: ``timedelta(days=31)``
     permanent_session_lifetime = ConfigAttribute('PERMANENT_SESSION_LIFETIME',
-        get_converter=_make_timedelta)
+                                                 get_converter=_make_timedelta)
 
     #: Enable this if you want to use the X-Sendfile feature.  Keep in
     #: mind that the server has to support this.  This only affects files
@@ -271,27 +272,27 @@ class Flask(_PackageBoundObject):
 
     #: Default configuration parameters.
     default_config = ImmutableDict({
-        'DEBUG':                                False,
-        'TESTING':                              False,
-        'PROPAGATE_EXCEPTIONS':                 None,
-        'PRESERVE_CONTEXT_ON_EXCEPTION':        None,
-        'SECRET_KEY':                           None,
-        'PERMANENT_SESSION_LIFETIME':           timedelta(days=31),
-        'USE_X_SENDFILE':                       False,
-        'LOGGER_NAME':                          None,
-        'SERVER_NAME':                          None,
-        'APPLICATION_ROOT':                     None,
-        'SESSION_COOKIE_NAME':                  'session',
-        'SESSION_COOKIE_DOMAIN':                None,
-        'SESSION_COOKIE_PATH':                  None,
-        'SESSION_COOKIE_HTTPONLY':              True,
-        'SESSION_COOKIE_SECURE':                False,
-        'MAX_CONTENT_LENGTH':                   None,
-        'SEND_FILE_MAX_AGE_DEFAULT':            12 * 60 * 60, # 12 hours
-        'TRAP_BAD_REQUEST_ERRORS':              False,
-        'TRAP_HTTP_EXCEPTIONS':                 False,
-        'PREFERRED_URL_SCHEME':                 'http',
-        'JSON_AS_ASCII':                        True
+        'DEBUG': False,
+        'TESTING': False,
+        'PROPAGATE_EXCEPTIONS': None,
+        'PRESERVE_CONTEXT_ON_EXCEPTION': None,
+        'SECRET_KEY': None,
+        'PERMANENT_SESSION_LIFETIME': timedelta(days=31),
+        'USE_X_SENDFILE': False,
+        'LOGGER_NAME': None,
+        'SERVER_NAME': None,
+        'APPLICATION_ROOT': None,
+        'SESSION_COOKIE_NAME': 'session',
+        'SESSION_COOKIE_DOMAIN': None,
+        'SESSION_COOKIE_PATH': None,
+        'SESSION_COOKIE_HTTPONLY': True,
+        'SESSION_COOKIE_SECURE': False,
+        'MAX_CONTENT_LENGTH': None,
+        'SEND_FILE_MAX_AGE_DEFAULT': 12 * 60 * 60,  # 12 hours
+        'TRAP_BAD_REQUEST_ERRORS': False,
+        'TRAP_HTTP_EXCEPTIONS': False,
+        'PREFERRED_URL_SCHEME': 'http',
+        'JSON_AS_ASCII': True
     })
 
     #: The rule object to use for URL rules created.  This is used by
@@ -510,8 +511,9 @@ class Flask(_PackageBoundObject):
     def _get_error_handlers(self):
         from warnings import warn
         warn(DeprecationWarning('error_handlers is deprecated, use the '
-            'new error_handler_spec attribute instead.'), stacklevel=1)
+                                'new error_handler_spec attribute instead.'), stacklevel=1)
         return self._error_handlers
+
     def _set_error_handlers(self, value):
         self._error_handlers = value
         self.error_handler_spec[None] = value
@@ -593,9 +595,9 @@ class Flask(_PackageBoundObject):
            Flask.init_jinja_globals.im_func:
             from warnings import warn
             warn(DeprecationWarning('This flask class uses a customized '
-                'init_jinja_globals() method which is deprecated. '
-                'Move the code from that method into the '
-                'create_jinja_environment() method instead.'))
+                                    'init_jinja_globals() method which is deprecated. '
+                                    'Move the code from that method into the '
+                                    'create_jinja_environment() method instead.'))
             self.__dict__['jinja_env'] = rv
             self.init_jinja_globals()
 
@@ -861,15 +863,15 @@ class Flask(_PackageBoundObject):
             'actual module objects.  Please upgrade to blueprints though.'
         if not self.enable_modules:
             raise RuntimeError('Module support was disabled but code '
-                'attempted to register a module named %r' % module)
+                               'attempted to register a module named %r' % module)
         else:
             from warnings import warn
             warn(DeprecationWarning('Modules are deprecated.  Upgrade to '
-                'using blueprints.  Have a look into the documentation for '
-                'more information.  If this module was registered by a '
-                'Flask-Extension upgrade the extension or contact the author '
-                'of that extension instead.  (Registered %r)' % module),
-                stacklevel=2)
+                                    'using blueprints.  Have a look into the documentation for '
+                                    'more information.  If this module was registered by a '
+                                    'Flask-Extension upgrade the extension or contact the author '
+                                    'of that extension instead.  (Registered %r)' % module),
+                 stacklevel=2)
 
         self.register_blueprint(module, **options)
 
@@ -959,7 +961,7 @@ class Flask(_PackageBoundObject):
         # starting with Flask 0.8 the view_func object can disable and
         # force-enable the automatic options handling.
         provide_automatic_options = getattr(view_func,
-            'provide_automatic_options', None)
+                                            'provide_automatic_options', None)
 
         if provide_automatic_options is None:
             if 'OPTIONS' not in methods:
@@ -1163,7 +1165,6 @@ class Flask(_PackageBoundObject):
                      function name will be used.
         """
         self.jinja_env.tests[name or f.__name__] = f
-
 
     @setupmethod
     def template_global(self, name=None):
@@ -1594,7 +1595,7 @@ class Flask(_PackageBoundObject):
         """
         if request is not None:
             return self.url_map.bind_to_environ(request.environ,
-                server_name=self.config['SERVER_NAME'])
+                                                server_name=self.config['SERVER_NAME'])
         # We need at the very least the server name to be set for this
         # to work.
         if self.config['SERVER_NAME'] is not None:

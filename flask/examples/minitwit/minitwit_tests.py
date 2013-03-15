@@ -36,10 +36,10 @@ class MiniTwitTestCase(unittest.TestCase):
         if email is None:
             email = username + '@example.com'
         return self.app.post('/register', data={
-            'username':     username,
-            'password':     password,
-            'password2':    password2,
-            'email':        email,
+            'username': username,
+            'password': password,
+            'password2': password2,
+            'email': email,
         }, follow_redirects=True)
 
     def login(self, username, password):
@@ -61,7 +61,7 @@ class MiniTwitTestCase(unittest.TestCase):
     def add_message(self, text):
         """Records a message"""
         rv = self.app.post('/add_message', data={'text': text},
-                                    follow_redirects=True)
+                           follow_redirects=True)
         if text:
             assert 'Your message was recorded' in rv.data
         return rv

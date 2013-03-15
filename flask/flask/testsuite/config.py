@@ -44,6 +44,7 @@ class ConfigTestCase(FlaskTestCase):
     def test_config_from_class(self):
         class Base(object):
             TEST_KEY = 'foo'
+
         class Test(Base):
             SECRET_KEY = 'devkey'
         app = flask.Flask(__name__)
@@ -61,7 +62,8 @@ class ConfigTestCase(FlaskTestCase):
                 self.assert_("'FOO_SETTINGS' is not set" in str(e))
             else:
                 self.assert_(0, 'expected exception')
-            self.assert_(not app.config.from_envvar('FOO_SETTINGS', silent=True))
+            self.assert_(
+                not app.config.from_envvar('FOO_SETTINGS', silent=True))
 
             os.environ = {'FOO_SETTINGS': __file__.rsplit('.', 1)[0] + '.py'}
             self.assert_(app.config.from_envvar('FOO_SETTINGS'))
@@ -83,7 +85,8 @@ class ConfigTestCase(FlaskTestCase):
                 self.assert_(msg.endswith("missing.cfg'"))
             else:
                 self.fail('expected IOError')
-            self.assertFalse(app.config.from_envvar('FOO_SETTINGS', silent=True))
+            self.assertFalse(
+                app.config.from_envvar('FOO_SETTINGS', silent=True))
         finally:
             os.environ = env
 
@@ -113,7 +116,7 @@ class LimitedLoaderMockWrapper(object):
     def __getattr__(self, name):
         if name in ('archive', 'get_filename'):
             msg = 'Mocking a loader which does not have `%s.`' % name
-            raise AttributeError, msg
+            raise AttributeError(msg)
         return getattr(self.loader, name)
 
 
@@ -126,6 +129,7 @@ def patch_pkgutil_get_loader(wrapper_class=LimitedLoaderMockWrapper):
     nor the `archive` attribute.
     """
     old_get_loader = pkgutil.get_loader
+
     def get_loader(*args, **kwargs):
         return wrapper_class(old_get_loader(*args, **kwargs))
     try:
@@ -160,18 +164,21 @@ class InstanceTestCase(FlaskTestCase):
     def test_uninstalled_module_paths(self):
         from config_module_app import app
         here = os.path.abspath(os.path.dirname(__file__))
-        self.assert_equal(app.instance_path, os.path.join(here, 'test_apps', 'instance'))
+        self.assert_equal(
+            app.instance_path, os.path.join(here, 'test_apps', 'instance'))
 
     def test_uninstalled_package_paths(self):
         from config_package_app import app
         here = os.path.abspath(os.path.dirname(__file__))
-        self.assert_equal(app.instance_path, os.path.join(here, 'test_apps', 'instance'))
+        self.assert_equal(
+            app.instance_path, os.path.join(here, 'test_apps', 'instance'))
 
     def test_installed_module_paths(self):
         here = os.path.abspath(os.path.dirname(__file__))
         expected_prefix = os.path.join(here, 'test_apps')
         real_prefix, sys.prefix = sys.prefix, expected_prefix
-        site_packages = os.path.join(expected_prefix, 'lib', 'python2.5', 'site-packages')
+        site_packages = os.path.join(
+            expected_prefix, 'lib', 'python2.5', 'site-packages')
         sys.path.append(site_packages)
         try:
             import site_app
@@ -188,7 +195,8 @@ class InstanceTestCase(FlaskTestCase):
         here = os.path.abspath(os.path.dirname(__file__))
         expected_prefix = os.path.join(here, 'test_apps')
         real_prefix, sys.prefix = sys.prefix, expected_prefix
-        site_packages = os.path.join(expected_prefix, 'lib', 'python2.5', 'site-packages')
+        site_packages = os.path.join(
+            expected_prefix, 'lib', 'python2.5', 'site-packages')
         sys.path.append(site_packages)
         with patch_pkgutil_get_loader():
             try:
@@ -241,7 +249,8 @@ class InstanceTestCase(FlaskTestCase):
         here = os.path.abspath(os.path.dirname(__file__))
         expected_prefix = os.path.join(here, 'test_apps')
         real_prefix, sys.prefix = sys.prefix, expected_prefix
-        site_packages = os.path.join(expected_prefix, 'lib', 'python2.5', 'site-packages')
+        site_packages = os.path.join(
+            expected_prefix, 'lib', 'python2.5', 'site-packages')
         sys.path.append(site_packages)
         try:
             import site_package
@@ -258,7 +267,8 @@ class InstanceTestCase(FlaskTestCase):
         here = os.path.abspath(os.path.dirname(__file__))
         expected_prefix = os.path.join(here, 'test_apps')
         real_prefix, sys.prefix = sys.prefix, expected_prefix
-        site_packages = os.path.join(expected_prefix, 'lib', 'python2.5', 'site-packages')
+        site_packages = os.path.join(
+            expected_prefix, 'lib', 'python2.5', 'site-packages')
         sys.path.append(site_packages)
         with patch_pkgutil_get_loader():
             try:
@@ -276,12 +286,13 @@ class InstanceTestCase(FlaskTestCase):
         here = os.path.abspath(os.path.dirname(__file__))
         expected_prefix = os.path.join(here, 'test_apps')
         real_prefix, sys.prefix = sys.prefix, expected_prefix
-        site_packages = os.path.join(expected_prefix, 'lib', 'python2.5', 'site-packages')
+        site_packages = os.path.join(
+            expected_prefix, 'lib', 'python2.5', 'site-packages')
         egg_path = os.path.join(site_packages, 'SiteEgg.egg')
         sys.path.append(site_packages)
         sys.path.append(egg_path)
         try:
-            import site_egg # in SiteEgg.egg
+            import site_egg  # in SiteEgg.egg
             self.assert_equal(site_egg.app.instance_path,
                               os.path.join(expected_prefix, 'var',
                                            'site_egg-instance'))
