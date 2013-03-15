@@ -1,51 +1,108 @@
-# all the imports
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 from __future__ import with_statement
-from contextlib import closing
-import sqlite3
-import time
-from flask import Flask, request, session, g, redirect, url_for,\
-    abort, render_template, flash
+import markdown
+from flask import Flask, request, session, redirect, url_for,\
+    abort, render_template, flash, Markup
+from flask.ext.sqlalchemy import SQLAlchemy
+from datetime import datetime
+from werkzeug.security import generate_password_hash, check_password_hash
+
 
 # configuration
-DATABASE = '/tmp/flaskr.db'
+
+# DATABASE = '/tmp/flaskr.db'
 DEBUG = True
 SECRET_KEY = 'development key'
-USERNAME = 'admin'
-PASSWORD = 'default'
+# USERNAME = 'admin'
+# PASSWORD = 'default'
 
 # create our litter application :)
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/flask.db'
+db = SQLAlchemy(app)
 app.config.from_object(__name__)
 app.config.from_envvar('FLASKR_SETTINGS', silent=True)
 
 
-def connect_db():
-    return sqlite3.connect(app.config['DATABASE'])
+class Entry(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(80))
+    author = db.Column(db.String(20))
+    pub_date = db.Column(db.DateTime)
+    # time=db.Column(db.String(30))
+    text = db.Column(db.String(100))
+
+    def __init__(self, title, author, text, pub_date=None):
+        self.title = title
+        self.author = author
+        self.text = text
+        if pub_date is None:
+            pub_date = datetime.utcnow()
+        self.pub_date = pub_date
+
+    def __repr__(self):
+        return '<Post %r>' % self.title
 
 
-def init_db():
-    with closing(connect_db()) as db:
-        with app.open_resource('schema.sql') as f:
-            db.cursor().executescript(f.read())
-        db.commit()
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80))
+    password = db.Column(db.String(20))
+
+    def __init__(self, username, password):
+        self.username = username
+        self.set_password(password)
+
+    def set_password(self, password):
+        self.password = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password, password)
+
+    def __repr__(self):
+        return '<User %r>' % self.username
 
 
-@app.before_request
-def before_request():
-    g.db = connect_db()
+@app.template_filter('md')
+def md_filter(s):
+    return Markup(markdown.markdown(s))
 
 
-@app.teardown_request
-def teardown_request(exception):
-    g.db.close()
+@app.template_filter()
+def timesince(dt, default=u"刚刚"):
+
+    """
+    Returns string representing "time since" e.g.
+    3 days ago, 5 hours ago etc.
+    """
+
+    now = datetime.now()
+    diff = now - dt
+
+    periods = (
+        (diff.days / 365, u" 年"),
+        (diff.days / 30, u" 月"),
+        (diff.days / 7, u" 周"),
+        (diff.days, u" 天"),
+        (diff.seconds / 3600, u" 小时"),
+        (diff.seconds / 60, u" 分钟"),
+    )
+
+    for period, unit in periods:
+        if period > 0:
+            return u"%d%s前" % (period, unit)
+
+    if diff.seconds > 1:
+            return u"%d 秒前" % diff.seconds
+
+    return default
 
 
 @app.route('/')
 def show_entries():
-    cur = g.db.execute(
-        'select title,author,time,text from entries order by id desc')
-    entries = [dict(title=row[0], author=row[1], time=row[2], text=row[
-                    3]) for row in cur.fetchall()]
+    entries = Entry.query.all()
     return render_template('show_entries.html', entries=entries)
 
 
@@ -56,12 +113,14 @@ def about():
 
 @app.route('/add', methods=['POST'])
 def add_entry():
-    cur_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
     if not session.get('logged_in'):
         abort(401)
-    g.db.execute('insert into entries (title,author,time, text) values (?, ?, ?, ?)', [request.form[
-                 'title'], app.config['USERNAME'], cur_time, request.form['text']])
-    g.db.commit()
+    title = request.form['title']
+    author = session['username']
+    text = request.form['text']
+    en = Entry(title, author, text)
+    db.session.add(en)
+    db.session.commit()
     flash('New entry was successfully posted')
     return redirect(url_for('show_entries'))
 
@@ -70,12 +129,14 @@ def add_entry():
 def login():
     error = None
     if request.method == 'POST':
-        if request.form['username'] != app.config['USERNAME']:
-            error = 'Invalid username'
-        elif request.form['password'] != app.config['PASSWORD']:
-            error = 'Invalid password'
+        user = User.query.filter_by(username=request.form['username']).first()
+        if not user:
+            flash('Invalid username')
+        elif not user.check_password(request.form['password']):
+            flash('Invalid password')
         else:
             session['logged_in'] = True
+            session['username'] = user.username
             flash('You were logged in')
             return redirect(url_for('show_entries'))
     return render_template('login.html', error=error)
@@ -88,4 +149,4 @@ def logout():
     return redirect(url_for('show_entries'))
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
