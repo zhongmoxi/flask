@@ -160,11 +160,11 @@ def logout():
 
 @app.route('/search', methods=['POST'])
 def search():
-    return redirect(url_for('search_results', query_word=session['query_word']))
+    return redirect(url_for('search_results', query_word=request.form['query_word']))
 
 @app.route('/search_results/<query_word>')
 def search_results(query_word):
-    results = Entry.query.whoosh_search(query_word, MAX_SEARCH_RESULTS).all()
+    results = Entry.query.whoosh_search(query_word,app.config['MAX_SEARCH_RESULTS']).all()
     return render_template('search_results.html', query_word=query_word, results=results)
 
 if __name__ == '__main__':
