@@ -1,6 +1,15 @@
+   
+<div>
    <strong><nav>
      <u1 class="menu">
        <li><a href="/">Home</a></li>
        <li><a href="{{ url_for('about') }}">About</a></li>
      </u1>
-   </nav></strong>
+     </nav></strong>
+     <h2>
+         <form action= "{{url_for('search')}}" method= "post" name= "search">
+             <input type=text name=query_word>
+             <input type=submit value=Search>
+         </form>
+     </h2>
+</div>

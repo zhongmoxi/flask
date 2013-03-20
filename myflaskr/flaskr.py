@@ -8,7 +8,8 @@ from flask import Flask, request, session, redirect, url_for,\
 from flask.ext.sqlalchemy import SQLAlchemy
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
-#
+import flask.ext.whooshalchemy as whooshalchemy
+
 
 # configuration
 
@@ -24,9 +25,14 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/flask.db'
 db = SQLAlchemy(app)
 app.config.from_object(__name__)
 app.config.from_envvar('FLASKR_SETTINGS', silent=True)
+app.config['WHOOSH_BASE'] = '/tmp/flask_search.db'
+app.config['MAX_SEARCH_RESULTS'] = 50
 
 
 class Entry(db.Model):
+
+    __searchable__ = ['text']
+
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(80))
     author = db.Column(db.String(20))
@@ -46,7 +52,11 @@ class Entry(db.Model):
         return '<Post %r>' % self.title
 
 
+whooshalchemy.whoosh_index(app, Entry)
+
+
 class User(db.Model):
+
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80))
     password = db.Column(db.String(20))
@@ -147,6 +157,15 @@ def logout():
     session.pop('logged_in', None)
     flash('You were logged out')
     return redirect(url_for('show_entries'))
+
+@app.route('/search', methods=['POST'])
+def search():
+    return redirect(url_for('search_results', query_word=session['query_word']))
+
+@app.route('/search_results/<query_word>')
+def search_results(query_word):
+    results = Entry.query.whoosh_search(query_word, MAX_SEARCH_RESULTS).all()
+    return render_template('search_results.html', query_word=query_word, results=results)
 
 if __name__ == '__main__':
     app.run(debug=True)
