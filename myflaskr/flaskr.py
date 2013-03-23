@@ -115,6 +115,10 @@ def show_entries():
     entries = Entry.query.all()
     return render_template('show_entries.html', entries=entries)
 
+@app.route('/entry/<int:entry_id>')
+def entry(entry_id):
+    entry= Entry.query.get(entry_id)
+    return render_template('entry.html', entry=entry)
 
 @app.route('/about')
 def about():
