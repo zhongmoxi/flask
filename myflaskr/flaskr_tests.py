@@ -8,19 +8,24 @@ import time
 class FlaskrTestCase(unittest.TestCase):
 
     def setUp(self):
-        # self.db_fd, flaskr.app.config['DATABASE'] = tempfile.mkstemp()
-        # flaskr.app.config['TESTING'] = True
+        #self.db_fd, flaskr.app.config['DATABASE'] = tempfile.mkstemp()
+        self.db_fd, self.db_filename = tempfile.mkstemp()
+        flaskr.app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///" + self.db_filename
+        flaskr.app.config['TESTING'] = True
         self.app = flaskr.app.test_client()
-        # flaskr.init_db()
+        flaskr.db.create_all()
+        test_user = flaskr.User('test_user', 'apple0109')
+        flaskr.db.session.add(test_user)
+        flaskr.db.session.commit()
 
     def tearDown(self):
-        # os.close(self.db_fd)
-        # os.unlink(flaskr.app.config['DATABASE'])
-        pass
+        os.close(self.db_fd)
+        #os.unlink(flaskr.app.config['DATABASE'])
+        os.unlink(self.db_filename)
 
-    def test_empty_db(self):
+    def test_unlogin_entry(self):
         rv = self.app.get('/')
-        assert 'No entries here so far' in rv.data
+        assert 'Unbelievable. No entries here so far' in rv.data
 
     def login(self, username, password):
         return self.app.post('/login', data=dict(
@@ -32,26 +37,30 @@ class FlaskrTestCase(unittest.TestCase):
         return self.app.get('/logout', follow_redirects=True)
 
     def test_login_logout(self):
-        rv = self.login('admin', 'default')
+        rv = self.login('test_user', 'apple0109')
         assert 'You were logged in' in rv.data
         rv = self.logout()
         assert 'You were logged out' in rv.data
-        rv = self.login('adminx', 'default')
+        rv = self.login('test_userx', 'default')
         assert 'Invalid username' in rv.data
-        rv = self.login('admin', 'defaultx')
+        rv = self.login('test_user', 'apple0109x')
         assert 'Invalid password' in rv.data
 
     def test_messages(self):
-        self.login('admin', 'default')
+        self.login('test_user', 'apple0109')
         rv = self.app.post('/add', data=dict(title='<Hello>',
                            text='<strong>HTML</strong> allowed here'), follow_redirects=True)
         assert 'No entries here so far' not in rv.data
         assert '&lt;Hello&gt;' in rv.data
         assert '<strong>HTML</strong> allowed here' in rv.data
-        assert 'admin' in rv.data
-        assert time.strftime(
-            '%Y-%m-%d', time.localtime(time.time())) in rv.data
+        assert 'test_user' in rv.data
+        # assert time.strftime('%Y-%m-%d', time.localtime(time.time())) in rv.data
+        rv = self.app.post('/add', data=dict(title='markdown',text=' **bold text**'),follow_redirects=True)
+        assert '**bold text**' not in rv.data
+        assert 'bold text' in rv.data
 
+    def text_search(self):
+        pass
 
 if __name__ == '__main__':
     unittest.main()
