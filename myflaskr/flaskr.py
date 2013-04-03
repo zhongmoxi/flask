@@ -4,11 +4,11 @@
 from __future__ import with_statement
 import markdown
 from flask import Flask, request, session, redirect, url_for,\
-    abort, render_template, flash, Markup
+    abort, render_template, flash, Markup, g
 from flask.ext.sqlalchemy import SQLAlchemy
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
-import flask.ext.whooshalchemy as whooshalchemy
+#import flask.ext.whooshalchemy as whooshalchemy
 
 
 # configuration
@@ -21,12 +21,13 @@ SECRET_KEY = 'development key'
 
 # create our litter application :)
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/flask.db'
-db = SQLAlchemy(app)
 app.config.from_object(__name__)
-app.config.from_envvar('FLASKR_SETTINGS', silent=True)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/flask.db'
 app.config['WHOOSH_BASE'] = '/tmp/flask_search.db'
 app.config['MAX_SEARCH_RESULTS'] = 50
+
+
+db = SQLAlchemy(app)
 
 
 class Entry(db.Model):
@@ -52,7 +53,7 @@ class Entry(db.Model):
         return '<Post %r>' % self.title
 
 
-whooshalchemy.whoosh_index(app, Entry)
+#whooshalchemy.whoosh_index(app, Entry)
 
 
 class User(db.Model):
@@ -115,10 +116,40 @@ def show_entries():
     entries = Entry.query.all()
     return render_template('show_entries.html', entries=entries)
 
+
 @app.route('/entry/<int:entry_id>')
 def entry(entry_id):
-    entry= Entry.query.get(entry_id)
+    entry = Entry.query.get(entry_id)
+    if not entry:
+        return abort(404)
     return render_template('entry.html', entry=entry)
+
+
+@app.route('/entry/<int:entry_id>/edit', methods=['GET', 'POST'])
+def edit_entry(entry_id):
+    if not session.get('logged_in'):
+        abort(401)
+    entry = Entry.query.get(entry_id)
+    if request.method == 'GET':
+        return render_template('edit_entry.html', entry=entry)
+    else:
+        entry.title = request.form['title']
+        entry.text = request.form['text']
+        db.session.commit()
+        flash('entry was successfully updated')
+        return redirect(url_for('entry', entry_id=entry.id))
+
+
+@app.route('/entry/<int:entry_id>/delete', methods=['GET'])
+def delete_entry(entry_id):
+    if not session.get('logged_in'):
+        abort(401)
+    entry = Entry.query.get(entry_id)
+    db.session.delete(entry)
+    db.session.commit()
+    flash('New entry was successfully deleted')
+    return redirect(url_for('show_entries'))
+
 
 @app.route('/about')
 def about():
@@ -162,13 +193,15 @@ def logout():
     flash('You were logged out')
     return redirect(url_for('show_entries'))
 
+
 @app.route('/search', methods=['POST'])
 def search():
     return redirect(url_for('search_results', query_word=request.form['query_word']))
 
+
 @app.route('/search_results/<query_word>')
 def search_results(query_word):
-    results = Entry.query.whoosh_search(query_word,app.config['MAX_SEARCH_RESULTS']).all()
+    results = Entry.query.whoosh_search(query_word, app.config['MAX_SEARCH_RESULTS']).all()
     return render_template('search_results.html', query_word=query_word, results=results)
 
 if __name__ == '__main__':

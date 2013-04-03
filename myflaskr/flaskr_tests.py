@@ -2,13 +2,11 @@ import os
 import flaskr
 import unittest
 import tempfile
-import time
 
 
 class FlaskrTestCase(unittest.TestCase):
 
     def setUp(self):
-        #self.db_fd, flaskr.app.config['DATABASE'] = tempfile.mkstemp()
         self.db_fd, self.db_filename = tempfile.mkstemp()
         flaskr.app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///" + self.db_filename
         flaskr.app.config['TESTING'] = True
@@ -20,7 +18,6 @@ class FlaskrTestCase(unittest.TestCase):
 
     def tearDown(self):
         os.close(self.db_fd)
-        #os.unlink(flaskr.app.config['DATABASE'])
         os.unlink(self.db_filename)
 
     def test_unlogin_entry(self):
@@ -55,12 +52,25 @@ class FlaskrTestCase(unittest.TestCase):
         assert '<strong>HTML</strong> allowed here' in rv.data
         assert 'test_user' in rv.data
         # assert time.strftime('%Y-%m-%d', time.localtime(time.time())) in rv.data
-        rv = self.app.post('/add', data=dict(title='markdown',text=' **bold text**'),follow_redirects=True)
+        rv = self.app.post('/add', data=dict(title='markdown', text=' **bold text**'), follow_redirects=True)
         assert '**bold text**' not in rv.data
         assert 'bold text' in rv.data
 
-    def text_search(self):
-        pass
+    def test_edit(self):
+        self.login('test_user', 'apple0109')
+        text = "I'm moxi ge"
+        rv = self.app.post('/add', data=dict(title='<Hello>', text=text), follow_redirects=True)
+        rv = self.app.get('/entry/1')
+        assert text in rv.data
+        text2 = "I'm moxi ge 2"
+        rv = self.app.post('/entry/1/edit', data=dict(title='Hello',
+                            text=text2), follow_redirects=True)
+
+        rv = self.app.get('/entry/1')
+        assert text2 in rv.data
+        self.app.get('/entry/1/delete')
+        rv = self.app.get('/entry/1')
+        assert rv.status_code == 404
 
 if __name__ == '__main__':
     unittest.main()
