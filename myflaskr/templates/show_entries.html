@@ -2,20 +2,20 @@
 {% block body %}
   {% if session.logged_in %}
     <form action="{{url_for('add_entry')}}" method="POST" class=add-entry>
-      <d1>
-	  <dt>Title:
-	  <dd><input type=text size=30 name=title>
-	  <dt>Text:
-      <dd><textarea class="mdm-input"  name=text rows=5 cols=40></textarea>
-	  <dd><input type=submit value=Share>
-      </d1>
+      <fieldset>
+        <label>Title</label>
+        <input type=text placeholder="Type title here" size=30 name=title>
+        <label>Text</label>
+        <textarea class="mdm-input" name="text" rows=5 cols=40></textarea>
+        <input type=submit value=Share>
+      </fieldset>
     </form>
   {% endif %}
   <ul class=entries>
   {% for entry in entries %}
-  <li><h2><a class="entry_link" target="_blank" href="/entry/{{entry.id}}"> {{entry.title}}</a></h2>
-  <li><h3>{{entry.author}}  {{entry.pub_date | timesince }}</h3>
-    {{ entry.text|md }}
+    <li><strong><a class="entry_link" target="_blank" href="/entry/{{entry.id}}"> {{entry.title}}</a></strong>
+    <li><small><i class="icon-user"></i>{{entry.author}}   <i class="icon-time"></i>{{entry.pub_date | timesince }}</small>
+    <p class="text-success">{{ entry.text|md }}</p>
   {% else %}
     <li><em>Unbelievable. No entries here so far</em>
   {% endfor %}

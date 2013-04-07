@@ -12,19 +12,22 @@
 <link rel="stylesheet" href="./static/mdmagick/assets/icon_font/style.css" />
 <!--[if lte IE 7]><script src="./static/mdmagick/assets/icon_font/lte-ie7.js"></script><![endif]-->
 
+<link rel="stylesheet" href="./static/bootstrap/css/bootstrap.min.css" media="screen">
+<script src="http://code.jquery.com/jquery.js"></script>
+<script src="./static/bootstrap/js/bootstrap.min.js"></script>
 
 <div class=page>
-   <h1>Flaskr</h1>
-   {% include "menu.html" %}
-   <div class=metanav>
-   {% if not session.logged_in %}
-     <a href="{{url_for('login')}}">log in</a>
-   {% else %}
-     <a href="{{url_for('logout')}}">log out</a>
-   {% endif %}
-   </div>
-   {% for message in get_flashed_messages() %}
-     <div class=flash>{{message}}</div>
-   {% endfor %}
-   {% block body %}{% endblock %}
+  <h1>Flaskr</h1>
+  <div align="right">  
+  {% if not session.logged_in %}
+    <a href="{{url_for('login')}}">log in</a>
+  {% else %}
+    <a href="{{url_for('logout')}}">log out</a>
+    {% endif %}
+  </div>
+  {% include "menu.html" %}
+  {% for message in get_flashed_messages() %}
+    <div class=flash>{{message}}</div>
+  {% endfor %}
+  {% block body %}{% endblock %}
 </div>

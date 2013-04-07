@@ -9,7 +9,7 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 #import flask.ext.whooshalchemy as whooshalchemy
-
+from flask.ext.admin import Admin
 
 # configuration
 
@@ -26,6 +26,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/flask.db'
 app.config['WHOOSH_BASE'] = '/tmp/flask_search.db'
 app.config['MAX_SEARCH_RESULTS'] = 50
 
+admin = Admin(app)
 
 db = SQLAlchemy(app)
 
