@@ -1,33 +1,66 @@
 <!doctype html>
-<title>Flaskr</title>
-<link rel=stylesheet type=text/css href="{{url_for('static', filename='style.css')}}">
+<html lang="en">
+  <head>
+    <title>Flaskr</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<script src="./static/mdmagick/vendor/jquery.js" type="text/javascript" charset="utf-8"></script>
-<script src="./static/mdmagick/vendor/a-tools.js" type="text/javascript" charset="utf-8"></script>
-<script src="./static/mdmagick/vendor/showdown.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/static/mdmagick/vendor/jquery.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/static/mdmagick/vendor/a-tools.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/static/mdmagick/vendor/showdown.js" type="text/javascript" charset="utf-8"></script>
 
-<script src="./static/mdmagick/lib/mdmagick.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/static/mdmagick/lib/mdmagick.js" type="text/javascript" charset="utf-8"></script>
 
-<link rel="stylesheet" href="./static/mdmagick/assets/mdmagick.css" ></style>
-<link rel="stylesheet" href="./static/mdmagick/assets/icon_font/style.css" />
-<!--[if lte IE 7]><script src="./static/mdmagick/assets/icon_font/lte-ie7.js"></script><![endif]-->
+    <link rel="stylesheet" href="/static/mdmagick/assets/mdmagick.css" ></style>
+    <link rel="stylesheet" href="/static/mdmagick/assets/icon_font/style.css" />
+    <!--[if lte IE 7]><script src="/static/mdmagick/assets/icon_font/lte-ie7.js"></script><![endif]-->
 
-<link rel="stylesheet" href="./static/bootstrap/css/bootstrap.min.css" media="screen">
-<script src="http://code.jquery.com/jquery.js"></script>
-<script src="./static/bootstrap/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css" media="screen">
+  </head>
 
-<div class=page>
-  <h1>Flaskr</h1>
-  <div align="right">  
-  {% if not session.logged_in %}
-    <a href="{{url_for('login')}}">log in</a>
-  {% else %}
-    <a href="{{url_for('logout')}}">log out</a>
-    {% endif %}
-  </div>
-  {% include "menu.html" %}
-  {% for message in get_flashed_messages() %}
-    <div class=flash>{{message}}</div>
-  {% endfor %}
-  {% block body %}{% endblock %}
-</div>
+  <body>
+    <div class="navbar">
+      <div class="navbar-inner">
+        <div class="container">
+          <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>    
+            <span class="icon-bar"></span>
+          </button>
+          <a class="brand" href="/">Flaskr</a>
+          <div class="nav-collapse collapse">
+            <p class="navbar-text pull-right">
+            {% if not session.logged_in %}
+              <a href="{{url_for('login')}}">login</a>
+            {% else %}
+              <a href="{{url_for('logout')}}">logout</a>
+            {% endif %}
+            </p>
+            <ul class="nav">
+              <li class="active"><a href="/">Home</a></li>
+              <li ><a href="{{url_for('about')}}"</a>About</li>
+            </ul>
+            <form class="navbar-form" action="{{url_for('search')}}" method= "post" name= "search">
+              <input type=text name=query_word> 
+              <input type=submit value=Search>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="container-fluid">
+      <div class="row-fluid">
+        <div class="span9 offset3">
+            {% for message in get_flashed_messages() %}
+            <div class=flash>{{message}}</div>
+            {% endfor %}
+            {% block mybody %}{% endblock %}
+            </div>
+        </div>
+      </div>
+    </div>
+    <script src="http://code.jquery.com/jquery.js"></script>
+    <script src="./static/bootstrap/js/bootstrap.min.js"></script>
+  </body>
+</html>
+
+

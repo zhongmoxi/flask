@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% block body %}
+{% block mybody %}
   <div class=entries>
     <li><strong><a class="entry_link" target="_blank" href="/entry/{{entry.id}}"> {{entry.title}}</a></strong>
     <li><small><i class="icon-user"></i>{{entry.author}}   <i class="icon-time"></i>{{entry.pub_date | timesince }}</small>
