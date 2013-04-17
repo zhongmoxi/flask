@@ -8,7 +8,7 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 #import flask.ext.whooshalchemy as whooshalchemy
-from flask.ext.admin import Admin
+from flask.ext.admin import Admin,BaseView,expose
 
 # configuration
 
@@ -25,7 +25,17 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(os.path.dirn
 app.config['WHOOSH_BASE'] = '/tmp/flask_search.db'
 app.config['MAX_SEARCH_RESULTS'] = 50
 
+
+class MyView(BaseView):
+    @expose('/')
+    def index(self):
+        return self.render('index.html')
+
 admin = Admin(app)
+
+admin.add_view(MyView(name='Hello 1',endpoint='test1',category='Test'))
+admin.add_view(MyView(name='Hello 2',endpoint='test2',category='Test'))
+admin.add_view(MyView(name='Hello 3',endpoint='test3',category='Test'))
 
 db = SQLAlchemy(app)
 
