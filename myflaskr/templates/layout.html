@@ -10,7 +10,7 @@
 
     <script src="/static/mdmagick/lib/mdmagick.js" type="text/javascript" charset="utf-8"></script>
 
-    <link rel="stylesheet" href="/static/mdmagick/assets/mdmagick.css" ></style>
+    <link rel="stylesheet" href="/static/mdmagick/assets/mdmagick.css" />
     <link rel="stylesheet" href="/static/mdmagick/assets/icon_font/style.css" />
     <!--[if lte IE 7]><script src="/static/mdmagick/assets/icon_font/lte-ie7.js"></script><![endif]-->
 
@@ -26,7 +26,6 @@
             <span class="icon-bar"></span>    
             <span class="icon-bar"></span>
           </button>
-          <a class="brand" href="/">Flaskr</a>
           <div class="nav-collapse collapse">
             <p class="navbar-text pull-right">
             {% if not session.logged_in %}
@@ -37,7 +36,7 @@
             </p>
             <ul class="nav">
               <li class="active"><a href="/">Home</a></li>
-              <li ><a href="{{url_for('about')}}"</a>About</li>
+              <li ><a href="{{url_for('about')}}">About</a></li>
             </ul>
             <form class="navbar-form" action="{{url_for('search')}}" method= "post" name= "search">
               <input type=text name=query_word> 

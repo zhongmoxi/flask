@@ -22,7 +22,7 @@ SECRET_KEY = 'development key'
 # create our litter application :)
 app = Flask(__name__)
 app.config.from_object(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/flask.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///./flask.db'
 app.config['WHOOSH_BASE'] = '/tmp/flask_search.db'
 app.config['MAX_SEARCH_RESULTS'] = 50
 
