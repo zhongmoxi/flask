@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
-from __future__ import with_statement
+import os
 import markdown
 from flask import Flask, request, session, redirect, url_for,\
     abort, render_template, flash, Markup, g
@@ -22,7 +21,7 @@ SECRET_KEY = 'development key'
 # create our litter application :)
 app = Flask(__name__)
 app.config.from_object(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///./flask.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(os.path.dirname(os.path.abspath(__file__)), 'flaskr.db')
 app.config['WHOOSH_BASE'] = '/tmp/flask_search.db'
 app.config['MAX_SEARCH_RESULTS'] = 50
 
