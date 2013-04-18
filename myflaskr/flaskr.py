@@ -33,9 +33,12 @@ class MyView(BaseView):
 
 admin = Admin(app)
 
-admin.add_view(MyView(name='Hello 1',endpoint='test1',category='Test'))
-admin.add_view(MyView(name='Hello 2',endpoint='test2',category='Test'))
-admin.add_view(MyView(name='Hello 3',endpoint='test3',category='Test'))
+admin.add_view(MyView(name='user 1', endpoint='user1', category='User'))
+admin.add_view(MyView(name='user 2',endpoint='user2',category='User'))
+admin.add_view(MyView(name='user 3',endpoint='user3',category='User'))
+admin.add_view(MyView(name='entry 1',endpoint='entry1',category='Entry'))
+admin.add_view(MyView(name='entry 2',endpoint='entry2',category='Entry'))
+admin.add_view(MyView(name='entry 3',endpoint='entry3',category='Entry'))
 
 db = SQLAlchemy(app)
 
