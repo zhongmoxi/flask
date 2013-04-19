@@ -3,12 +3,13 @@
 import os
 import markdown
 from flask import Flask, request, session, redirect, url_for,\
-    abort, render_template, flash, Markup, g
+    abort, render_template, flash, Markup
 from flask.ext.sqlalchemy import SQLAlchemy
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 #import flask.ext.whooshalchemy as whooshalchemy
-from flask.ext.admin import Admin,BaseView,expose
+from flask.ext.admin import Admin
+from flask.ext.admin.contrib.sqlamodel import ModelView
 
 # configuration
 
@@ -25,22 +26,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(os.path.dirn
 app.config['WHOOSH_BASE'] = '/tmp/flask_search.db'
 app.config['MAX_SEARCH_RESULTS'] = 50
 
-
-class MyView(BaseView):
-    @expose('/')
-    def index(self):
-        return self.render('index.html')
-
-admin = Admin(app)
-
-admin.add_view(MyView(name='user 1', endpoint='user1', category='User'))
-admin.add_view(MyView(name='user 2',endpoint='user2',category='User'))
-admin.add_view(MyView(name='user 3',endpoint='user3',category='User'))
-admin.add_view(MyView(name='entry 1',endpoint='entry1',category='Entry'))
-admin.add_view(MyView(name='entry 2',endpoint='entry2',category='Entry'))
-admin.add_view(MyView(name='entry 3',endpoint='entry3',category='Entry'))
-
 db = SQLAlchemy(app)
+admin = Admin(app)
 
 
 class Entry(db.Model):
@@ -54,13 +41,16 @@ class Entry(db.Model):
     # time=db.Column(db.String(30))
     text = db.Column(db.String(100))
 
-    def __init__(self, title, author, text, pub_date=None):
-        self.title = title
-        self.author = author
-        self.text = text
+    @classmethod
+    def create(cls, title, author, text, pub_date=None):
+        entry = cls()
+        entry.title = title
+        entry.author = author
+        entry.text = text
         if pub_date is None:
-            pub_date = datetime.utcnow()
-        self.pub_date = pub_date
+            pub_date = datetime.now()
+        entry.pub_date = pub_date
+        return entry
 
     def __repr__(self):
         return '<Post %r>' % self.title
@@ -75,9 +65,12 @@ class User(db.Model):
     username = db.Column(db.String(80))
     password = db.Column(db.String(20))
 
-    def __init__(self, username, password):
-        self.username = username
-        self.set_password(password)
+    @classmethod
+    def create(cls, username, password):
+        user = cls()
+        user.username = username
+        user.set_password(password)
+        return user
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
@@ -87,6 +80,10 @@ class User(db.Model):
 
     def __repr__(self):
         return '<User %r>' % self.username
+
+
+admin.add_view(ModelView(User, db.session))
+admin.add_view(ModelView(Entry, db.session))
 
 
 @app.template_filter('md')
@@ -176,7 +173,7 @@ def add_entry():
     title = request.form['title']
     author = session['username']
     text = request.form['text']
-    en = Entry(title, author, text)
+    en = Entry.create(title, author, text)
     db.session.add(en)
     db.session.commit()
     flash('New entry was successfully posted')
