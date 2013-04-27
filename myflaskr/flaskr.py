@@ -10,6 +10,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 #import flask.ext.whooshalchemy as whooshalchemy
 from flask.ext.admin import Admin
 from flask.ext.admin.contrib.sqlamodel import ModelView
+from rss import rss
 
 # configuration
 
@@ -25,6 +26,7 @@ app.config.from_object(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(os.path.dirname(os.path.abspath(__file__)), 'flaskr.db')
 app.config['WHOOSH_BASE'] = '/tmp/flask_search.db'
 app.config['MAX_SEARCH_RESULTS'] = 50
+app.register_blueprint(rss, url_prefix='/rss')
 
 db = SQLAlchemy(app)
 admin = Admin(app)
