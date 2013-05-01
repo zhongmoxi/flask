@@ -3,7 +3,7 @@
 import os
 import markdown
 from flask import Flask, request, session, redirect, url_for,\
-    abort, render_template, flash, Markup
+    abort, render_template, flash, Markup,make_response
 from flask.ext.sqlalchemy import SQLAlchemy
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -233,8 +233,10 @@ def rss_feed():
             link="/entry/"+str(entry.id),
             description=entry.text,
         )
-    
-    return feed.writeString('UTF-8')
+    feed=feed.writeString('UTF-8')
+    resp = make_response(feed)
+    resp.headers["Content-Type"] = "application/rss+xml"
+    return resp
 
 
 if __name__ == '__main__':
