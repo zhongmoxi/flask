@@ -219,7 +219,7 @@ def search_results(query_word):
 @app.route('/rss')
 def rss_feed():
 
-    feed = feedgenerator.DefaultFeed(
+    feed = feedgenerator.Rss201rev2Feed(
         title="Rss from blog.zhongmoxi.com",
         link="blog.zhongmoxi.com",
         description="""Hi moxi""",
@@ -230,7 +230,7 @@ def rss_feed():
     for entry in entries:
         feed.add_item(
             title=entry.title,
-            link="/entry/<int:entry.entry_id>",
+            link="/entry/"+str(entry.id),
             description=entry.text,
         )
     
