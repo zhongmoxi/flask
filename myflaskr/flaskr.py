@@ -10,7 +10,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 #import flask.ext.whooshalchemy as whooshalchemy
 from flask.ext.admin import Admin
 from flask.ext.admin.contrib.sqlamodel import ModelView
-from rss import rss
+import feedgenerator
 
 # configuration
 
@@ -26,7 +26,6 @@ app.config.from_object(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(os.path.dirname(os.path.abspath(__file__)), 'flaskr.db')
 app.config['WHOOSH_BASE'] = '/tmp/flask_search.db'
 app.config['MAX_SEARCH_RESULTS'] = 50
-app.register_blueprint(rss, url_prefix='/rss')
 
 db = SQLAlchemy(app)
 admin = Admin(app)
@@ -215,6 +214,28 @@ def search():
 def search_results(query_word):
     results = Entry.query.whoosh_search(query_word, app.config['MAX_SEARCH_RESULTS']).all()
     return render_template('search_results.html', query_word=query_word, results=results)
+
+
+@app.route('/rss')
+def rss_feed():
+
+    feed = feedgenerator.DefaultFeed(
+        title="Rss from blog.zhongmoxi.com",
+        link="blog.zhongmoxi.com",
+        description="""Hi moxi""",
+        language=u"zh-cn",
+    )
+
+    entries = Entry.query.all()
+    for entry in entries:
+        feed.add_item(
+            title=entry.title,
+            link="/entry/<int:entry.entry_id>",
+            description=entry.text,
+        )
+    
+    return feed.writeString('UTF-8')
+
 
 if __name__ == '__main__':
     app.run(debug=True)
