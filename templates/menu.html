@@ -10,17 +10,13 @@
       <div class="nav-collapse collapse">
         <ul class="nav">
           <li class="active"><a href="/">Home</a></li>
-          <li ><a href="{{url_for('about')}}"</a>About</li>
+          <li ><a href="{{url_for('front.about')}}"</a>About</li>
         </ul>
-        <form class="navbar-form" action="{{url_for('search')}}" method= "post" name= "search">
-          <input type=text name=query_word>
-          <input type=submit value=Search>
-        </form>
         <ul class="nav">
         {% if not session.logged_in %}
-          <li><a href="{{url_for('login')}}">login</a></li>
+          <li><a href="{{url_for('front.login')}}">login</a></li>
         {% else %}
-          <li><a href="{{url_for('logout')}}">logout</a></li>
+          <li><a href="{{url_for('front.logout')}}">logout</a></li>
         {% endif %}
         </ul>
       </div>

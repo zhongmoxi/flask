@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block mybody %}
   {% if session.logged_in %}
-    <form action="{{url_for('add_entry')}}" method="POST" class=add-entry>
+    <form action="{{url_for('entry.add_entry')}}" method="POST" class=add-entry>
       <fieldset>
         <label>Title</label>
         <input type=text placeholder="Type title here" size=30 name=title>

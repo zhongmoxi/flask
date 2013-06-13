@@ -1,0 +1,6 @@
+markdown
+Flask
+Flask-SQLAlchemy
+Flask-Admin
+Flask-Script
+feedgenerator
